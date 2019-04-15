@@ -1,0 +1,17 @@
+.equality-rows {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.action-btns { 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.action-btns button {
+  margin: 6px;
+}
