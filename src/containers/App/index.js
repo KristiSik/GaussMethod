@@ -19,11 +19,12 @@ class App extends Component {
   };
 
   handleSolveClick = () => {
+    this.props.clearAll();
     this.props.solve();
   };
 
   render() {
-    const { equalities, error } = this.props;
+    const { equalities, error, results } = this.props;
     return (
       <div className="equality-rows">
         {equalities.map(e => (
@@ -38,9 +39,12 @@ class App extends Component {
         <div>
           {error}
         </div>
+        <div>
+          {results.map((result, index) => <span> <b className="variable">{result.variable}</b> = {result.value}{index !== results.length - 1 && ","}</span>)}
+        </div>
         <div className="action-btns">
           <button onClick={this.handleAddEquality}>Додати рівняння</button>
-          <button onClick={this.handleSolveClick}>Розв'язати</button>
+          <button onClick={this.handleSolveClick} className="solve-btn">Розв'язати</button>
         </div>
       </div>
     );
@@ -48,10 +52,11 @@ class App extends Component {
 }
 
 const mapStateToProps = state => {
-  const { equalities, error } = state.data;
+  const { equalities, error, results } = state.data;
   return {
     equalities,
-    error
+    error,
+    results
   };
 };
 

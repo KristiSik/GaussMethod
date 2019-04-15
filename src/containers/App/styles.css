@@ -15,3 +15,12 @@
 .action-btns button {
   margin: 6px;
 }
+
+.variable {
+  color: red;
+}
+
+.solve-btn {
+  background-color: cornflowerblue;
+  border: 1px solid gray;
+}

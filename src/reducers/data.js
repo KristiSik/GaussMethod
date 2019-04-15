@@ -1,13 +1,13 @@
 import * as actions from "../actions/DataActions";
 import { emptyEquality } from "../utility/emptyModels";
 import updateObject from "../utility/updateObject";
-import { getMatrix, transformToStepMatrix, checkMatrix, getVariables } from "../utility/equality";
+import GaussMethod from "../utility/equality";
 import { INCOMPATIBLE_MATRIX, INDEFINITE_MATRIX } from "../constants/matrixTypes";
 
 const initialState = {
   equalities: [{ ...emptyEquality(1) }],
   nextId: 2,
-  result: [],
+  results: [],
   variables: [],
 };
 
@@ -41,13 +41,14 @@ const deleteEquality = (state, action) => {
 
 const solve = (state, action) => {
   const { equalities } = state
+  const gauss = new GaussMethod();
+  const normalizedEqualities = gauss.normalizeEqualities(equalities)
+  const variables = gauss.getVariables(normalizedEqualities)
+  const matrix = gauss.getMatrix(normalizedEqualities, variables)
 
-  const variables = getVariables(equalities)
-  const matrix = getMatrix(equalities, variables)
+  gauss.transformToStepMatrix(matrix)
 
-  transformToStepMatrix(matrix)
-
-  const matrixType = checkMatrix(matrix)
+  const matrixType = gauss.checkMatrix(matrix)
   if (matrixType === INCOMPATIBLE_MATRIX) {
     return updateObject(state, { error: "Matrix is incompatible" })
   }
@@ -55,7 +56,8 @@ const solve = (state, action) => {
     return updateObject(state, { error: "Matrix is indefinite" })
   }
 
-  const results = solveMatrix(matrix)
+  const results = gauss.solveMatrix(matrix, variables)
+  return updateObject(state, { results })
 }
 
 function dataReducer(state = initialState, action) {
@@ -68,6 +70,8 @@ function dataReducer(state = initialState, action) {
       return deleteEquality(state, action);
     case actions.SOLVE:
       return solve(state, action)
+    case actions.CLEAR_ALL:
+      return updateObject(state, { error: null, results: [] })
     default:
       return state;
   }
